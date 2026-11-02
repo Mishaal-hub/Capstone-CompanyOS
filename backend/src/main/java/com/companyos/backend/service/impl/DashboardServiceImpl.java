@@ -62,7 +62,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         DashboardOverviewDTO dto = new DashboardOverviewDTO();
 
-        long employees = employeeRepository.count();
+        long employees = employeeRepository.countByOrganizationId(orgId);
         long totalProjects = projectRepository.countByOrganizationId(orgId);
         List<Project> projects = projectRepository.findByOrganizationId(orgId);
         long activeProjects = projects.stream().filter(p -> "IN_PROGRESS".equals(p.getStatus()) || "PLANNED".equals(p.getStatus())).count();

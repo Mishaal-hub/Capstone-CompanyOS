@@ -76,4 +76,26 @@ public class EmployeeRequestDTO {
 
     public String    getStatus()                       { return status; }
     public void      setStatus(String v)               { this.status = v; }
+
+    /**
+     * Convert this DTO to a new Employee entity.
+     * organizationId is NOT set here — it is stamped by EmployeeServiceImpl from TenantContext.
+     */
+    public com.companyos.backend.entity.Employee toEntity() {
+        com.companyos.backend.entity.Employee e = new com.companyos.backend.entity.Employee();
+        e.setFirstName(firstName);
+        e.setLastName(lastName);
+        e.setEmail(email);
+        e.setPhone(phone);
+        e.setGender(gender);
+        e.setDepartmentId(departmentId);
+        e.setDesignation(designation);
+        e.setPosition(jobTitle);
+        e.setSalary(salary);
+        e.setHireDate(hireDate);
+        e.setStatus(status != null ? status : "ACTIVE");
+        // Generate a simple employee code if not provided — will be overridden by service if needed
+        e.setEmployeeCode(java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        return e;
+    }
 }

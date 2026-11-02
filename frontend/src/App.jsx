@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { api } from "./api";
 import Sidebar from "./components/Sidebar";
 import Login from "./Login";
+
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import Projects from "./pages/Projects";
@@ -13,6 +14,9 @@ import Growth from "./pages/Growth";
 import Activity from "./pages/Activity";
 import Settings from "./pages/Settings";
 import Company from "./pages/Company";
+import Calendar from "./pages/Calendar";
+import Notifications from "./pages/Notifications";
+
 import "./App.css";
 
 export default function App() {
@@ -23,10 +27,12 @@ export default function App() {
   useEffect(() => {
     const token = localStorage.getItem("companyos_token");
     const currentUser = localStorage.getItem("companyos_current_user");
+
     if (token && currentUser) {
       setUsername(currentUser);
       setLoggedIn(true);
     }
+
     setLoading(false);
   }, []);
 
@@ -38,6 +44,7 @@ export default function App() {
   function handleLogout() {
     localStorage.removeItem("companyos_token");
     localStorage.removeItem("companyos_current_user");
+
     setUsername("");
     setLoggedIn(false);
   }
@@ -57,22 +64,90 @@ export default function App() {
   return (
     <div className="app">
       <Sidebar username={username} onLogout={handleLogout} />
+
       <main className="ml-60 lg:ml-0">
         <Routes>
-            <Route path="/" element={<Dashboard username={username} />} />
-            <Route path="/tasks" element={<Tasks username={username} />} />
-            <Route path="/projects" element={<Projects username={username} />} />
-            <Route path="/mate" element={<MATE username={username} />} />
-            <Route path="/goals" element={<Goals username={username} />} />
-            <Route path="/team" element={<Team username={username} />} />
-            <Route path="/growth" element={<Growth username={username} />} />
-            <Route path="/activity" element={<Activity username={username} />} />
-            <Route path="/settings" element={<Settings username={username} />} />
-            <Route path="/calendar" element={<div className="space-y-6"><h1 className="text-2xl font-bold text-gray-900">Calendar</h1><p className="text-gray-500">Coming soon.</p></div>} />
-            <Route path="/companies" element={<Company username={username} />} />
-            <Route path="*" element={<Navigate to="/" />} />
+
+          {/* Dashboard */}
+          <Route
+            path="/"
+            element={<Dashboard username={username} />}
+          />
+
+          {/* Tasks */}
+          <Route
+            path="/tasks"
+            element={<Tasks username={username} />}
+          />
+
+          {/* Projects */}
+          <Route
+            path="/projects"
+            element={<Projects username={username} />}
+          />
+
+          {/* MATE */}
+          <Route
+            path="/mate"
+            element={<MATE username={username} />}
+          />
+
+          {/* Goals */}
+          <Route
+            path="/goals"
+            element={<Goals username={username} />}
+          />
+
+          {/* Team */}
+          <Route
+            path="/team"
+            element={<Team username={username} />}
+          />
+
+          {/* Growth */}
+          <Route
+            path="/growth"
+            element={<Growth username={username} />}
+          />
+
+          {/* Activity */}
+          <Route
+            path="/activity"
+            element={<Activity username={username} />}
+          />
+
+          {/* Calendar */}
+          <Route
+            path="/calendar"
+            element={<Calendar username={username} />}
+          />
+
+          {/* Settings */}
+          <Route
+            path="/settings"
+            element={<Settings username={username} />}
+          />
+
+          {/* Notifications */}
+          <Route
+            path="/notifications"
+            element={<Notifications username={username} />}
+          />
+
+          {/* Company */}
+          <Route
+            path="/companies"
+            element={<Company username={username} />}
+          />
+
+          {/* Unknown page */}
+          <Route
+            path="*"
+            element={<Navigate to="/" />}
+          />
+
         </Routes>
-        </main>
-      </div>
-    )
-  }
+      </main>
+    </div>
+  );
+}

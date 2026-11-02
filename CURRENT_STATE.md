@@ -1,577 +1,186 @@
 # CompanyOS — Current State
 
-> **Last updated:** 2026-10-08
-> **Purpose:** Current snapshot of the CompanyOS repository, completed work, working systems, and next development priorities.
+> **Last updated:** 2026-11-02 (Session 1 — Post Bug-Fix Pass)
+> **Purpose:** Accurate snapshot of what is complete, partial, pending, and broken.
 
 ---
 
-# 1. Project Overview
+## 1. Project Overview
 
-**CompanyOS** is an Adaptive Business Operating System designed to centralize company operations.
+CompanyOS is a full-stack Business Operating System built with Spring Boot (Java 21) + React/Vite + MySQL.
 
-The long-term platform will manage:
-
-* Companies
-* Departments
-* Employees
-* Teams
-* Projects
-* Tasks
-* Calendar & Events
-* Goals
-* Activity
-* Notifications
-* Business information
-* Dashboards
-* Reports
-* MATE AI intelligence
-
-### Current development focus
-
-The project is currently transitioning from the authentication/core-management foundation toward a more complete business operating system frontend.
-
-**Immediate next feature:**
-
-> Build the actual interactive CompanyOS Calendar and connect it to the backend.
+**Backend base URL:** http://localhost:8080
+**Frontend dev URL:** http://localhost:5173
+**Database:** MySQL — `companyos`
 
 ---
 
-# 2. Repository Status
+## 2. Latest Test Results
 
-The local project is connected to GitHub.
-
-```text
-Remote:
-https://github.com/Mishaal-hub/Capstone-CompanyOS.git
-
-Branch:
-main
-
-Working tree:
-Clean
-
-Git tracking:
-origin/main
+### Backend
 ```
+./mvnw.cmd test
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+```
+- BackendApplicationTests (context loads): PASS
+- CalendarEventIntegrationTests (11 tests): ALL PASS
 
-The current project has been backed up to GitHub.
+### Frontend Build
+```
+npm run build
+✓ built in 1.46s (1845 modules)
+Exit Code: 0
+```
+**No warnings or errors.**
 
 ---
 
-# 3. Repository Structure
+## 3. Completed Modules (Backend)
 
-```text
-CompanyOS/
-│
-├── backend/
-│   ├── src/
-│   ├── pom.xml
-│   ├── mvnw
-│   └── start.bat
-│
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.js
-│
-├── diagrams/
-├── docs/
-├── journal/
-│
-├── .env.example
-├── .gitignore
-├── CURRENT_STATE.md
-├── README.md
-└── Company OS MVP Architecture.png
-```
+| Module | Status | Notes |
+|--------|--------|-------|
+| Authentication — register | ✅ Complete | BCrypt, org created on register |
+| Authentication — login | ✅ Complete | JWT issued with orgId |
+| Authentication — OTP verification | ✅ Complete | 5-min expiry, 5 max attempts, BCrypt hash |
+| Authentication — Google OAuth | ✅ Complete | Server-side token verify + OTP |
+| Authentication — Forgot/Reset password | ✅ Complete | OTP flow, BCrypt, one-time use |
+| JWT infrastructure | ✅ Complete | userId/role/orgId in token, 7-day expiry |
+| TenantContext | ✅ Complete | ThreadLocal, set by JwtAuthFilter per request |
+| Task CRUD | ✅ Complete | Org-scoped, dependencies, comments, status |
+| Project CRUD | ✅ Complete | Org-scoped, members, milestones, progress auto-calc |
+| Goal CRUD | ✅ Complete | Org-scoped, progress tracking |
+| Calendar CRUD | ✅ Complete | Org-scoped, Instant timestamps, event types/statuses |
+| Dashboard overview | ✅ Complete | Real DB data — all KPIs, health score, alerts, activity |
+| Audit logging | ✅ Complete | Org-scoped, CREATE/UPDATE/DELETE events |
+| Notification service | ✅ Complete | Send, retrieve, markRead, markAllRead, unreadCount |
+| Notification controller | ✅ Fixed (this session) | GET /api/notifications, PATCH /read, PATCH /read-all |
+| Employee CRUD (org-scoped) | ✅ Fixed (this session) | Now scoped to orgId — was global IDOR vulnerability |
+| Department CRUD (org-scoped) | ✅ Fixed (this session) | Now scoped to orgId — was global IDOR vulnerability |
 
 ---
 
-# 4. Technology Stack
+## 4. Completed Modules (Frontend)
 
-| Layer            | Technology                                |
-| ---------------- | ----------------------------------------- |
-| Frontend         | React                                     |
-| Build Tool       | Vite                                      |
-| Backend          | Spring Boot                               |
-| Language         | Java                                      |
-| Database         | MySQL                                     |
-| ORM              | Spring Data JPA / Hibernate               |
-| Security         | Spring Security                           |
-| Password Hashing | BCrypt                                    |
-| Authentication   | JWT + Email/OTP + Google OAuth foundation |
-| Email            | Spring Mail / SMTP                        |
-| API              | REST                                      |
-| Version Control  | Git + GitHub                              |
-
----
-
-# 5. Backend Status
-
-The backend contains the main architecture for CompanyOS.
-
-### Backend layers
-
-```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Entity
-    ↓
-MySQL
-```
-
-### Major backend areas
-
-```text
-backend/src/main/java/com/companyos/backend/
-
-├── common/
-├── config/
-├── controller/
-├── dto/
-├── entity/
-├── exception/
-├── repository/
-├── security/
-├── service/
-│   └── impl/
-└── util/
-```
-
-### Backend modules currently present
-
-* Authentication
-* Company
-* Department
-* Employee
-* Dashboard
-* Projects
-* Tasks
-* Goals
-* Notifications
-* AI/MATE foundation
-* Audit services
-* Security/JWT infrastructure
+| Page | Status | Notes |
+|------|--------|-------|
+| Login / Register | ✅ Complete | All auth screens, OTP boxes, password strength, cooldowns |
+| Dashboard | ✅ Complete | Live data, stat cards, health score, navigation buttons fixed |
+| Tasks | ✅ Fixed | hardcoded organizationId removed, projectId required validation |
+| Projects | ✅ Fixed | hardcoded organizationId removed |
+| Goals | ✅ Improved | Edit + delete added, hardcoded organizationId removed |
+| Team | ✅ Improved | Full CRUD form added (was read-only) |
+| Calendar | ✅ Complete | Month/week/day views, event CRUD dialog |
+| Activity | ✅ Complete | Renders audit feed from API |
+| Growth | ✅ Complete | Health breakdown from real data |
+| MATE | ✅ Fixed | FolderKanban import crash fixed, data-driven insights |
+| Notifications | ✅ New page | GET/mark-read/mark-all-read, unread count |
+| Settings | ⚠️ Partial | UI shell only — Save Changes does nothing |
+| Company | ✅ Complete | CRUD via /api/companies |
+| Sidebar | ✅ Updated | Notifications link added |
 
 ---
 
-# 6. Authentication Status
+## 5. Security Status
 
-Authentication has progressed significantly beyond the original MVP state.
-
-### Current authentication components
-
-* Email/password registration
-* BCrypt password hashing
-* Email verification
-* OTP verification
-* Password reset
-* Password reset OTP
-* OTP expiry
-* OTP resend handling
-* OTP attempt limits
-* One-time OTP usage
-* Secure session/OTP handling
-* Google OAuth foundation
-* JWT infrastructure
-* Email/SMTP integration
-
-### Password reset
-
-The password reset flow has been implemented and tested.
-
-Current conceptual flow:
-
-```text
-Forgot Password
-      ↓
-Enter Email
-      ↓
-Generate OTP
-      ↓
-Send OTP by Email
-      ↓
-Verify OTP
-      ↓
-Enter New Password
-      ↓
-Password Updated
-```
-
-### Security principles
-
-Sensitive values are kept outside the committed repository.
-
-Examples:
-
-```text
-.env
-SMTP credentials
-Database password
-JWT secrets
-OAuth secrets
-```
-
-These should never be committed to GitHub.
+| Issue | Status |
+|-------|--------|
+| Employee cross-org IDOR | ✅ Fixed — all methods now scoped to orgId |
+| Department cross-org IDOR | ✅ Fixed — all methods now scoped to orgId |
+| Dashboard global employee count | ✅ Fixed — uses countByOrganizationId |
+| @CrossOrigin on DepartmentController | ✅ Removed |
+| JWT signed with configurable secret | ✅ In place — env var JWT_SECRET |
+| BCrypt on all passwords/OTPs | ✅ In place |
+| OTP brute-force protection (5 attempts) | ✅ In place for Google + password reset OTPs |
+| Email verification OTP — no attempt tracking | ⚠️ Open — low risk (accounts locked after unverified, each resend generates new code) |
+| Default JWT fallback secret in production | ⚠️ Open — warns in code but does not hard-fail startup |
+| CORS localhost-only | ⚠️ Intentional for dev — production domains must be added before deploy |
 
 ---
 
-# 7. Frontend Status
+## 6. Known Remaining Issues
 
-The frontend is a React/Vite application.
-
-### Current structure
-
-```text
-frontend/src/
-
-├── assets/
-├── components/
-│   └── Sidebar.jsx
-│
-├── pages/
-│   ├── Activity.jsx
-│   ├── Company.jsx
-│   ├── Dashboard.jsx
-│   ├── Goals.jsx
-│   ├── Growth.jsx
-│   ├── MATE.jsx
-│   ├── Projects.jsx
-│   ├── Settings.jsx
-│   ├── Tasks.jsx
-│   └── Team.jsx
-│
-├── App.jsx
-├── App.css
-├── Login.jsx
-├── Login.css
-├── api.js
-├── index.css
-└── main.jsx
-```
-
-### Frontend modules
-
-Current navigation includes:
-
-* Dashboard
-* Company
-* Team
-* Projects
-* Tasks
-* Calendar
-* Goals
-* Growth
-* Activity
-* MATE
-* Settings
+| ID | Severity | Description |
+|----|----------|-------------|
+| B009 | Medium | Settings page "Save Changes" is a no-op — needs /api/profile or /api/users/me endpoint |
+| S005 | Medium | Default JWT fallback secret — should log startup ERROR if JWT_SECRET not set in prod |
+| S006 | Low | Email verification OTP has no attempt tracking in AuthServiceImpl.verifyEmail |
+| FE005 | Low | Company page /companies not in sidebar — accessible via direct URL only |
+| FE006 | Done | Dashboard calendar/projects navigation buttons — FIXED this session |
 
 ---
 
-# 8. CompanyOS Branding
+## 7. Git Status (as of session end)
 
-CompanyOS now has its actual project logo available in:
+```
+Modified (unstaged):
+  backend/src/test/java/com/companyos/backend/BackendApplicationTests.java
+  frontend/src/App.jsx
+  frontend/src/api.js
+  frontend/src/pages/Activity.jsx  (pre-existing)
+  frontend/src/pages/MATE.jsx      (fixed)
+  frontend/src/pages/Tasks.jsx     (fixed)
+  frontend/src/pages/Projects.jsx  (fixed)
+  frontend/src/pages/Goals.jsx     (replaced)
+  frontend/src/pages/Team.jsx      (replaced)
+  frontend/src/pages/Dashboard.jsx (fixed)
+  frontend/src/components/Sidebar.jsx (updated)
+  backend/pom.xml                  (fixed)
+  backend/src/main/java/com/companyos/backend/entity/Employee.java
+  backend/src/main/java/com/companyos/backend/dto/EmployeeRequestDTO.java
+  backend/src/main/java/com/companyos/backend/repository/EmployeeRepository.java
+  backend/src/main/java/com/companyos/backend/repository/DepartmentRepository.java
+  backend/src/main/java/com/companyos/backend/service/impl/EmployeeServiceImpl.java
+  backend/src/main/java/com/companyos/backend/service/impl/DepartmentServiceImpl.java
+  backend/src/main/java/com/companyos/backend/service/impl/DashboardServiceImpl.java
+  backend/src/main/java/com/companyos/backend/controller/EmployeeController.java
+  backend/src/main/java/com/companyos/backend/controller/DepartmentController.java
+  backend/src/main/java/com/companyos/backend/controller/DashboardController.java
 
-```text
-frontend/src/assets/companyos-logo.png
+Untracked (new files this session):
+  backend/src/main/java/com/companyos/backend/controller/NotificationController.java
+  frontend/src/pages/Notifications.jsx
+  DEVELOPMENT_LOG.md
+  PENDING_TASKS.md
+  CHANGELOG.md
+  CURRENT_STATE.md (this file — updated)
+  NEXT_SESSION_PROMPT.md (to be written at session end)
 ```
 
-The logo is intended to be used consistently across the CompanyOS interface.
-
----
-
-# 9. Calendar Status
-
-## Current state
-
-The Calendar section exists as part of the CompanyOS frontend navigation, but the **actual interactive calendar implementation is the next major feature to build**.
-
-### Planned functionality
-
-```text
-Calendar
-│
-├── Month View
-├── Week View
-├── Day View
-├── Today
-├── Previous / Next
-│
-├── Create Event
-├── Edit Event
-├── Delete Event
-│
-├── Event Title
-├── Date
-├── Time
-├── Description
-└── Event Category
+**Recommended next Git commit:**
 ```
-
-### Planned backend architecture
-
-```text
-Calendar.jsx
-     ↓
-Calendar API
-     ↓
-CalendarController
-     ↓
-CalendarService
-     ↓
-CalendarRepository
-     ↓
-Calendar Entity
-     ↓
-MySQL
-```
-
-### Important
-
-The Calendar should first be made functional on the frontend and then connected to the backend.
-
-Do not introduce unnecessary dependencies unless they provide clear value.
-
----
-
-# 10. Database Status
-
-CompanyOS uses MySQL.
-
-Configured database:
-
-```text
-companyos
-```
-
-The backend uses Spring Data JPA / Hibernate for persistence.
-
-Current entity areas include:
-
-* User
-* Company
-* Department
-* Employee
-* Project
-* ProjectMember
-* Task
-* TaskComment
-* TaskDependency
-* Goal
-* Milestone
-* Notification
-* Client
-* Deal
-* AIConversation
-* AIMessage
-* AIProposedAction
-* AuditLog
-* Organization
-* Role
-
-### Future Calendar database model
-
-A Calendar event will eventually need fields similar to:
-
-```text
-id
-title
-description
-startDateTime
-endDateTime
-eventType
-status
-createdBy
-createdAt
-updatedAt
-```
-
-The exact entity design should be decided before implementing the backend.
-
----
-
-# 11. Git / GitHub Status
-
-The project was initialized as a Git repository and connected to:
-
-```text
-https://github.com/Mishaal-hub/Capstone-CompanyOS.git
-```
-
-Current branch:
-
-```text
-main
-```
-
-The local project was merged safely with the existing GitHub history.
-
-The repository was successfully pushed to GitHub.
-
-### Important workflow
-
-Before starting a major feature:
-
-```bash
-git status
-```
-
-Then make sure the working tree is clean.
-
-After completing a feature:
-
-```bash
 git add .
-git commit -m "Describe the feature"
-git push origin main
+git commit -m "fix: org-scoped Employee/Department CRUD, NotificationController, MATE import crash, pom.xml build fix, Goals/Team CRUD improvements"
 ```
 
 ---
 
-# 12. Important Security Rule
+## 8. Stopping Point
 
-Never commit the real `.env` file.
-
-The repository should contain:
-
-```text
-.env.example
-```
-
-but not:
-
-```text
-.env
-```
-
-Before pushing:
-
-```bash
-git status
-```
-
-must be checked.
+This session completed:
+1. Full codebase audit (DEVELOPMENT_LOG Task 001)
+2. pom.xml build blocker fixed (Task 002)
+3. MATE.jsx missing import fixed (Task 003)
+4. Employee entity + repo + service + controller — org-scoped security fix (Task 004)
+5. Department repo + service + controller — org-scoped security fix (Task 005)
+6. NotificationController created (Task 006)
+7. Tasks.jsx hardcoded orgId + projectId validation fixed (Task 007)
+8. DashboardController role restriction removed (Task 008)
+9. Goals.jsx — edit/delete added, improved form (Task 009)
+10. Team.jsx — full CRUD form added (Task 010)
+11. api.js — notifications + employees + departments API functions added (Task 011)
+12. App.jsx — Notifications page route added (Task 012)
+13. Sidebar.jsx — Notifications link added (Task 013)
+14. Dashboard.jsx — navigation buttons wired (Task 014)
+15. DashboardServiceImpl — global employee count fixed (Task 015)
 
 ---
 
-# 13. Current Development Priorities
+## 9. Next Development Priorities
 
-The recommended order from the current state is:
-
-### Priority 1 — Calendar
-
-Build the actual interactive Calendar.
-
-### Priority 2 — Calendar backend
-
-Create:
-
-```text
-CalendarEvent
-CalendarEventRepository
-CalendarEventService
-CalendarEventServiceImpl
-CalendarEventController
-```
-
-and connect it to MySQL.
-
-### Priority 3 — Employee/Team UI
-
-Connect the existing employee backend functionality to the frontend.
-
-### Priority 4 — Dashboard
-
-Use real backend data for:
-
-* Employees
-* Projects
-* Tasks
-* Goals
-* Activity
-* Upcoming events
-
-### Priority 5 — Projects & Tasks
-
-Connect the existing backend foundation to polished frontend workflows.
-
-### Priority 6 — MATE
-
-Expand MATE from an interface foundation into an intelligent company assistant.
-
----
-
-# 14. Current Immediate Next Step
-
-## Build the CompanyOS Calendar
-
-The next development session should begin by inspecting the existing Calendar section and then implementing:
-
-```text
-1. Calendar layout
-2. Month navigation
-3. Date selection
-4. Today button
-5. Event creation
-6. Event display
-7. Event editing
-8. Event deletion
-9. Frontend state management
-10. Backend API
-11. MySQL persistence
-```
-
-Do not modify working authentication unnecessarily while implementing Calendar.
-
----
-
-# 15. Development Rule
-
-CompanyOS should be developed incrementally.
-
-For every major feature:
-
-```text
-Plan
- ↓
-Implement
- ↓
-Run application
- ↓
-Test
- ↓
-Fix errors
- ↓
-Git commit
- ↓
-Git push
- ↓
-Update CURRENT_STATE.md
-```
-
-`CURRENT_STATE.md` should be updated whenever a major development phase is completed.
-
----
-
-# 16. Project Principle
-
-CompanyOS is being built as a real product rather than only a college demonstration.
-
-The architecture should therefore prioritize:
-
-* Security
-* Maintainability
-* Clean separation of concerns
-* Reusable components
-* Proper database persistence
-* Good UX
-* Scalable backend architecture
-* Clear documentation
-* Incremental development
-
-> **CompanyOS — Build. Learn. Improve. Grow.**
+1. Settings page — wire Save Changes to backend profile update endpoint
+2. Company page — add to sidebar navigation
+3. Add email verification OTP attempt tracking
+4. JWT secret startup warning/enforcement
+5. Write integration tests for Employee/Department org isolation
+6. Recommend Git commit for this session's work

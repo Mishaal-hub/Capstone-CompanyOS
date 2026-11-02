@@ -70,11 +70,26 @@ export default function Tasks({ username }) {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+
+    // projectId is required by the backend — prevent submission if not selected
+    if (!form.projectId) {
+      setError("Please select a project for this task.");
+      return;
+    }
+
     try {
+      const payload = {
+        title: form.title,
+        description: form.description || "",
+        priority: form.priority,
+        status: form.status,
+        projectId: Number(form.projectId),
+        dueDate: form.dueDate || null,
+      };
       if (editing) {
-        await api.put(`/tasks/${editing}`, form);
+        await api.put(`/tasks/${editing}`, payload);
       } else {
-        await api.post("/tasks", { ...form, organizationId: 1 });
+        await api.post("/tasks", payload);
       }
       setShowForm(false);
       setEditing(null);
@@ -193,8 +208,9 @@ export default function Tasks({ username }) {
               className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
               value={form.projectId}
               onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+              required
             >
-              <option value="">No project</option>
+              <option value="">— Select a project (required) —</option>
               {projects.map((p) => (
                 <option key={p.projectId} value={p.projectId}>{p.projectName}</option>
               ))}

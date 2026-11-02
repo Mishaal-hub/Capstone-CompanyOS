@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 function getToken() {
   return localStorage.getItem("companyos_token");
@@ -157,3 +157,29 @@ export function resendResetOtp(email) {
     body: JSON.stringify({ email }),
   }).then(r => r.text());
 }
+
+// Calendar uses the same authenticated request helper as the rest of CompanyOS.
+export function getCalendarEvents(from, to) {
+  return api.get(`/calendar/events?${new URLSearchParams({ from, to })}`);
+}
+export function createCalendarEvent(data) { return api.post('/calendar/events', data); }
+export function updateCalendarEvent(id, data) { return api.put(`/calendar/events/${id}`, data); }
+export function deleteCalendarEvent(id) { return api.delete(`/calendar/events/${id}`); }
+
+// Notifications
+export function getNotifications() { return api.get('/notifications'); }
+export function getUnreadCount() { return api.get('/notifications/unread-count'); }
+export function markNotificationRead(id) { return api.patch(`/notifications/${id}/read`); }
+export function markAllNotificationsRead() { return api.patch('/notifications/read-all'); }
+
+// Employees
+export function getEmployees() { return api.get('/employees'); }
+export function createEmployee(data) { return api.post('/employees', data); }
+export function updateEmployee(id, data) { return api.put(`/employees/${id}`, data); }
+export function deleteEmployee(id) { return api.delete(`/employees/${id}`); }
+
+// Departments
+export function getDepartments() { return api.get('/departments'); }
+export function createDepartment(data) { return api.post('/departments', data); }
+export function updateDepartment(id, data) { return api.put(`/departments/${id}`, data); }
+export function deleteDepartment(id) { return api.delete(`/departments/${id}`); }

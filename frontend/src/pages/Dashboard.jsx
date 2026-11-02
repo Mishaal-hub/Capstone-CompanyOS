@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import {
   FolderKanban,
@@ -39,6 +40,7 @@ export default function Dashboard({ username }) {
   const [error, setError] = useState("");
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => { loadDashboard(); }, []);
 
@@ -96,7 +98,7 @@ export default function Dashboard({ username }) {
           <div className="dashboard-panel focus-panel">
             <div className="panel-heading">
               <div className="panel-title"><span className="panel-title-icon"><Target size={19} /></span><h2>Today's Focus</h2></div>
-              <button className="panel-link"><CalendarDays size={16} /> View Calendar</button>
+              <button className="panel-link" onClick={() => navigate("/calendar")}><CalendarDays size={16} /> View Calendar</button>
             </div>
             {activeTasks.length === 0 ? (
               <div className="dashboard-empty">
@@ -120,7 +122,7 @@ export default function Dashboard({ username }) {
           <div className="dashboard-panel projects-panel">
             <div className="panel-heading">
               <div className="panel-title"><span className="panel-title-icon"><FolderOpen size={19} /></span><h2>Projects Overview</h2></div>
-              <button className="panel-link">View All Projects <ArrowUpRight size={16} /></button>
+              <button className="panel-link" onClick={() => navigate("/projects")}>View All Projects <ArrowUpRight size={16} /></button>
             </div>
             {projects.length === 0 ? (
               <div className="dashboard-empty projects-empty">

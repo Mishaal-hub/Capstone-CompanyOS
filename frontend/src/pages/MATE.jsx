@@ -10,6 +10,7 @@ import {
   Target,
   ArrowRight,
   Loader2,
+  FolderKanban,
 } from "lucide-react";
 
 export default function MATE({ username }) {

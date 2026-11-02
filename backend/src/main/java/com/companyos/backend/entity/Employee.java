@@ -57,6 +57,9 @@ public class Employee {
     @Column(name = "company_id")
     private Long companyId;
 
+    @Column(name = "organization_id")
+    private Long organizationId;
+
     public Employee() {
     }
 
@@ -186,5 +189,13 @@ public class Employee {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId != null ? organizationId : companyId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 }

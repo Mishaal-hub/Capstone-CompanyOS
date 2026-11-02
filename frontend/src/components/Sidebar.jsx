@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Calendar,
   Activity,
+  Bell,
   Settings,
   LogOut,
   Menu,
@@ -30,6 +31,7 @@ const navItems = [
   { section: "WORKSPACE", items: [
     { to: "/calendar", icon: Calendar, label: "Calendar" },
     { to: "/activity", icon: Activity, label: "Activity" },
+    { to: "/notifications", icon: Bell, label: "Notifications" },
   ]},
   { section: "SYSTEM", items: [
     { to: "/settings", icon: Settings, label: "Settings" },

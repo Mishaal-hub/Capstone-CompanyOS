@@ -1,48 +1,125 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import { Activity as ActivityIcon, Loader2, Clock } from "lucide-react";
+import {
+  Activity as ActivityIcon,
+  Loader2,
+  Clock,
+} from "lucide-react";
 
 export default function Activity({ username }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadActivity(); }, []);
+  useEffect(() => {
+    loadActivity();
+  }, []);
 
   async function loadActivity() {
     try {
       const data = await api.get("/dashboard/overview");
       setItems(data?.recentActivity || []);
-    } catch {}
-    setLoading(false);
+    } catch (error) {
+      console.error("Could not load activity:", error);
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-blue-600" size={32} /></div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2
+          className="animate-spin text-blue-600"
+          size={32}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div><h1 className="text-2xl font-bold text-gray-900">Activity</h1><p className="text-sm text-gray-500">Recent activity across your organization.</p></div>
+
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Activity
+        </h1>
+
+        <p className="text-sm text-gray-500">
+          Recent activity across your organization.
+        </p>
+      </div>
+
+      {/* Activity List */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+
         {items.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
-            <ActivityIcon size={48} className="mx-auto mb-4 opacity-50" />
+
+            <ActivityIcon
+              size={48}
+              className="mx-auto mb-4 opacity-50"
+            />
+
             <p>No recent activity</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {items.map((a, i) => (
-              <div key={i} className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors">
+
+            {items.map((activity, index) => (
+              <div
+                key={activity.id || index}
+                className="flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors"
+              >
+
+                {/* Activity Icon */}
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                  <ActivityIcon size={18} className="text-blue-600" />
+                  <ActivityIcon
+                    size={18}
+                    className="text-blue-600"
+                  />
                 </div>
+
+                {/* Activity Information */}
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900">{a.action || "Activity"}</div>
-                  <div className="text-xs text-gray-500">{a.entityType || "System"}</div>
+
+                  {/* Action */}
+                  <div className="text-sm font-medium text-gray-900">
+                    {activity.action || "Activity"}
+                  </div>
+
+                  {/* Entity Type */}
+                  <div className="text-xs text-gray-500">
+                    {activity.entityType || "System"}
+                  </div>
+
+                  {/* Description */}
+                  {activity.description && (
+                    <div className="text-sm text-gray-700 mt-1">
+                      {activity.description}
+                    </div>
+                  )}
+
                 </div>
-                <div className="text-xs text-gray-400 shrink-0 flex items-center gap-1"><Clock size={12} /> {a.timestamp ? new Date(a.timestamp).toLocaleString() : "Just now"}</div>
+
+                {/* Timestamp */}
+                <div className="text-xs text-gray-400 shrink-0 flex items-center gap-1">
+                  <Clock size={12} />
+
+                  {activity.timestamp
+                    ? new Date(
+                        activity.timestamp
+                      ).toLocaleString()
+                    : "Just now"}
+                </div>
+
               </div>
             ))}
+
           </div>
         )}
+
       </div>
     </div>
   );

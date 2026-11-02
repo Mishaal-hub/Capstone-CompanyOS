@@ -42,7 +42,8 @@ export default function Projects({ username }) {
     e.preventDefault();
     setError("");
     try {
-      const payload = { ...form, organizationId: 1, progress: 0 };
+      const payload = { ...form, progress: 0 };
+      if (form.budget) payload.budget = Number(form.budget);
       if (editing) {
         await api.put(`/projects/${editing}`, payload);
       } else {
